@@ -230,6 +230,17 @@ test-release-workflow:
   git tag test-release
   git push origin test-release
 
+# create and push a release tag based on Cargo.toml version
+[group: 'release']
+release:
+  #!/usr/bin/env bash
+  set -euxo pipefail
+  VERSION=`sed -En 's/version[[:space:]]*=[[:space:]]*"([^"]+)"/\1/p' Cargo.toml | head -1`
+  echo "Creating release for version $VERSION"
+  git tag -a "$VERSION" -m "Release $VERSION"
+  git push origin "$VERSION"
+  echo "Tag $VERSION pushed. GitHub Actions will build and publish Docker images to ghcr.io"
+
 # Local Variables:
 # mode: makefile
 # End:
