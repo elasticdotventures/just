@@ -70,3 +70,4 @@ jobs:
         labels: ${{ steps.metadata.outputs.labels }}
         build-args: |
           JUST_VERSION=${{ inputs.version }}
+          RELEASE_REPO=${{ github.repository }}

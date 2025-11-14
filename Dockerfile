@@ -14,9 +14,10 @@ ARG RUST_ARCH=aarch64
 # Fetch the expected version of `just` via GH Releases:
 FROM downloader-${TARGETARCH} AS downloader
 SHELL ["/bin/ash", "-eux", "-o", "pipefail", "-c"]
-# This ARG will be set via GitHub Actions during release builds
+# These ARGs will be set via GitHub Actions during release builds
 ARG JUST_VERSION
-ARG RELEASE_URL="https://github.com/casey/just/releases/download/${JUST_VERSION}/just-${JUST_VERSION}-${RUST_ARCH}-unknown-linux-musl.tar.gz"
+ARG RELEASE_REPO
+ARG RELEASE_URL="https://github.com/${RELEASE_REPO}/releases/download/${JUST_VERSION}/just-${JUST_VERSION}-${RUST_ARCH}-unknown-linux-musl.tar.gz"
 RUN wget -O - "${RELEASE_URL}" \
     | tar --directory /usr/local/bin --extract --gzip --no-same-owner just
 
