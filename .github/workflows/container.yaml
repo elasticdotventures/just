@@ -47,6 +47,17 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Derive version tags
+      id: version
+      run: |
+        version='${{ inputs.version }}'
+        sanitized="${version%%[!0-9.]*}"
+        if [[ -z "$sanitized" ]]; then
+          sanitized="$version"
+        fi
+        echo "full=$version" >> "$GITHUB_OUTPUT"
+        echo "sanitized=$sanitized" >> "$GITHUB_OUTPUT"
+
     - name: Prepare image metadata
       id: metadata
       uses: docker/metadata-action@v5
@@ -56,9 +67,12 @@ jobs:
         # will implicitly append a `latest` tag to publish:
         # https://github.com/docker/metadata-action/issues/461#issuecomment-2680849083
         tags: |
-          type=semver,pattern={{major}},value=${{ inputs.version }}
-          type=semver,pattern={{major}}.{{minor}},value=${{ inputs.version }}
-          type=semver,pattern={{major}}.{{minor}}.{{patch}},value=${{ inputs.version }}
+          type=raw,value=${{ steps.version.outputs.full }}
+          type=semver,pattern={{major}},value=${{ steps.version.outputs.sanitized }}
+          type=semver,pattern={{major}}.{{minor}},value=${{ steps.version.outputs.sanitized }}
+          type=semver,pattern={{major}}.{{minor}}.{{patch}},value=${{ steps.version.outputs.sanitized }}
+        labels: |
+          org.opencontainers.image.version=${{ steps.version.outputs.full }}
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v6
