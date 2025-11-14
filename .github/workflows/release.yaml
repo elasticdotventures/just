@@ -152,7 +152,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >-
         gh release download
-        --repo casey/just
+        --repo ${{ github.repository }}
         --pattern '*'
         --dir release
         ${{ github.ref_name }}
